@@ -215,7 +215,7 @@ def genPlots(vals, errs, N_r):
     plt.show()
 
 
-def converganceTest(N_r_initial=2, t_initial=0, t_final=900, t_step=20, diff_percent=0.1, max_itr=20, gen_plots=False):
+def convergenceTest(N_r_initial=2, t_initial=0, t_final=900, t_step=20, diff_percent=0.1, max_itr=20, gen_plots=False):
     """
     Performs a convergence test to determine the required mesh density (N_r)
     for accurately predicting when the average temperature of the "beverage" can
