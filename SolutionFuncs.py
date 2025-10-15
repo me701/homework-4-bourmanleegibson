@@ -123,40 +123,50 @@ def Cool_can(N_r, t_initial, t_final, t_step, T0=None):
     return t_initial, t_final, T_bar, sol.y.T.reshape((-1, N_z, N_r))
 
 
-def valCross(ind,dep,ths):
+def valCross(dep,ind,ths):
     """
-    Interpolates to find the value of `dep` corresponding to a threshold `ths` 
-    in the independent variable `ind`, assuming `ind` is in descending order.
+    A very incomplete interpolation funtion to find the value of `ind` 
+    corresponding to a threshold `ths` in the dependent variable `dep`, 
+    assuming `dep` is in descending order.
 
-    The function searches for the first point where `ind` drops below `ths`, 
-    and linearly interpolates between surrounding points to estimate `dep(ths)`.
+    The function searches for the first point where `dep` drops below `ths`, 
+    and linearly interpolates between surrounding points to estimate `ind(ths)`.
+
+    Breaks if `ths` > `dep[0]` (index error) or if `dep` is not strictly decreasing 
+    (undetermined output).
 
     Parameters
     ----------
-    ind : array-like
-        Independent variable values (must be in descending order).
     dep : array-like
-        Dependent variable values corresponding to `ind`.
+        Dependent variable values (must be strictly descending).
+    ind : array-like
+        Independent variable values corresponding to `dep`.
     ths : float
-        Threshold value to locate within `ind`.
+        Threshold value to locate within `dep` (must be less than dep[0]).
 
     Returns
     -------
     float
-        Interpolated value of `dep` at the threshold `ths`.
+        Interpolated value of `ind` at the threshold `ths`.
 
     Raises
     ------
     ValueError
-        If `ths` is not crossed by any value in `ind`.
+        If `ths` is not crossed by any value in `dep`.
 
     """
-    for i in range(len(ind)):
-        if ind[i] < ths:
-            return (dep[i-1]-dep[i])/(ind[i-1]-ind[i])*(ths-ind[i]) + dep[i]
-        elif ind[i] == ths:
-            return dep[i]
-    raise ValueError("Threshold was not crossed by ind.")
+    for i in range(len(dep)-1):
+        if dep[i] < dep[i+1]:
+            raise ValueError("Values of 'dep' must be strictly decreasing.")
+    if ths > dep[0]:
+        raise ValueError("Threshold is higher than range of dep.")
+    
+    for i in range(len(dep)):
+        if dep[i] < ths:
+            return (ind[i-1]-ind[i])/(dep[i-1]-dep[i])*(ths-dep[i]) + ind[i]
+        elif dep[i] == ths:
+            return ind[i]
+    raise ValueError("Threshold was not crossed by dep.")
 
 
 def genPlots(vals, errs, N_r):
